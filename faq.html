@@ -269,6 +269,19 @@ footer a:hover{color:var(--gold)}
 .nbhd{background:#fff;border:1px solid #eee;border-radius:12px;padding:18px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.04)}
 .nbhd b{display:block;color:var(--green-deep);font-weight:900;font-size:16px}
 .nbhd small{display:block;color:var(--grey);font-size:12.5px;margin-top:4px;font-weight:600}
+
+@media(max-width:900px){
+.mobile-toggle{display:none}
+.mobile-burger{position:fixed;top:60px;right:18px;z-index:99998;background:#06140f;color:#d6a25f;width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.3);user-select:none}
+.nav-mobile-menu{position:fixed;top:0;right:-110%;width:300px;max-width:85vw;height:100vh;background:#06140f;z-index:99999;padding:70px 28px 28px;box-shadow:-12px 0 40px rgba(0,0,0,.4);overflow-y:auto;transition:right .3s ease;display:block}
+.mobile-toggle:checked ~ .nav-mobile-menu{right:0}
+.nav-mobile-menu a{display:block;color:#fff;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.1);font-weight:700;font-size:17px;text-decoration:none}
+.nav-mobile-menu a:hover{color:#d6a25f}
+.nav-mobile-menu .mclose{position:absolute;top:12px;right:18px;color:#d6a25f;font-size:34px;cursor:pointer;line-height:1;font-weight:300}
+.nav-mobile-menu .mcall{background:#d6a25f;color:#06140f;text-align:center;margin-top:20px;padding:15px;border-radius:10px;font-weight:900;font-size:16px;border-bottom:none}
+.nav-mobile-menu .mcall:hover{color:#06140f;filter:brightness(1.1)}
+}
+@media(min-width:901px){.mobile-burger,.nav-mobile-menu{display:none !important}}
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"HomeAndConstructionBusiness","@id":"https://www.greenlandscapingofsacramento.com/#business","name":"Green Landscaping of Sacramento","url":"https://www.greenlandscapingofsacramento.com/","telephone":"+1-916-849-4844","priceRange":"$$","image":"https://www.greenlandscapingofsacramento.com/images/img-002-be077cb717.jpg","logo":"https://www.greenlandscapingofsacramento.com/images/img-001-7d7cdd6cc7.jpg","address":{"@type":"PostalAddress","addressLocality":"Elk Grove","addressRegion":"CA","addressCountry":"US"},"areaServed":[{"@type":"City","name":"Sacramento"},{"@type":"City","name":"Elk Grove"},{"@type":"City","name":"Rancho Cordova"}],"sameAs":["https://www.google.com/maps/place/Green+Landscaping+of+Sacramento/","https://www.instagram.com/greenlandscapingofsacramento/","https://www.yelp.com/biz/green-landscaping-sacramento-4","https://www.facebook.com/greenlandscapingofsacramento/"],"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.7","bestRating":"5","worstRating":"1","ratingCount":"36","reviewCount":"36"}}
@@ -309,6 +322,22 @@ footer a:hover{color:var(--gold)}
     </div>
   </div>
 </header>
+<input type="checkbox" id="mobile-toggle" class="mobile-toggle">
+<label for="mobile-toggle" class="mobile-burger">☰</label>
+<nav class="nav-mobile-menu">
+<label for="mobile-toggle" class="mclose">×</label>
+<a href="index.html">Home</a>
+<a href="turf.html">Turf</a>
+<a href="concrete.html">Concrete</a>
+<a href="sacramento.html">Sacramento</a>
+<a href="elk-grove.html">Elk Grove</a>
+<a href="rancho-cordova.html">Rancho Cordova</a>
+<a href="why-us.html">Why Us</a>
+<a href="about.html">About</a>
+<a href="faq.html">FAQ</a>
+<a href="contact.html">Contact</a>
+<a class="mcall" href="tel:9168494844">📞 (916) 849-4844</a>
+</nav>
 
 <section class="hero">
   <div class="hero-bg" style="background-image:url('images/img-008-e84465b054.jpg')"></div>
