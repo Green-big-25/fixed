@@ -276,6 +276,19 @@ footer a:hover{color:var(--gold)}
 .nbhd b{display:block;color:var(--green-deep);font-weight:900;font-size:16px}
 .nbhd small{display:block;color:var(--grey);font-size:12.5px;margin-top:4px;font-weight:600}
 
+
+@media(max-width:900px){
+.mobile-toggle{display:none}
+.mobile-burger{position:fixed;top:60px;right:18px;z-index:99998;background:#06140f;color:#d6a25f;width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.3);user-select:none}
+.nav-mobile-menu{position:fixed;top:0;right:-110%;width:300px;max-width:85vw;height:100vh;background:#06140f;z-index:99999;padding:70px 28px 28px;box-shadow:-12px 0 40px rgba(0,0,0,.4);overflow-y:auto;transition:right .3s ease;display:block}
+.mobile-toggle:checked ~ .nav-mobile-menu{right:0}
+.nav-mobile-menu a{display:block;color:#fff;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.1);font-weight:700;font-size:17px;text-decoration:none}
+.nav-mobile-menu a:hover{color:#d6a25f}
+.nav-mobile-menu .mclose{position:absolute;top:12px;right:18px;color:#d6a25f;font-size:34px;cursor:pointer;line-height:1;font-weight:300}
+.nav-mobile-menu .mcall{background:#d6a25f;color:#06140f;text-align:center;margin-top:20px;padding:15px;border-radius:10px;font-weight:900;font-size:16px;border-bottom:none}
+.nav-mobile-menu .mcall:hover{color:#06140f;filter:brightness(1.1)}
+}
+@media(min-width:901px){.mobile-burger,.nav-mobile-menu{display:none !important}}
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"HomeAndConstructionBusiness","@id":"https://www.greenlandscapingofsacramento.com/#business","name":"Green Landscaping of Sacramento","url":"https://www.greenlandscapingofsacramento.com/","telephone":"+1-916-849-4844","priceRange":"$$","image":"https://www.greenlandscapingofsacramento.com/images/img-002-be077cb717.jpg","logo":"https://www.greenlandscapingofsacramento.com/images/img-001-7d7cdd6cc7.jpg","address":{"@type":"PostalAddress","addressLocality":"Elk Grove","addressRegion":"CA","addressCountry":"US"},"areaServed":[{"@type":"City","name":"Sacramento"},{"@type":"City","name":"Elk Grove"},{"@type":"City","name":"Rancho Cordova"}],"sameAs":["https://www.google.com/maps/place/Green+Landscaping+of+Sacramento/","https://www.instagram.com/greenlandscapingofsacramento/","https://www.yelp.com/biz/green-landscaping-sacramento-4","https://www.facebook.com/greenlandscapingofsacramento/","https://www.bbb.org/us/ca/rancho-murieta/profile/sprinkler-system/green-landscaping-1156-90094748"],"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.7","bestRating":"5","worstRating":"1","ratingCount":"36","reviewCount":"36"}}
@@ -348,6 +361,22 @@ footer a:hover{color:var(--gold)}
     </div>
   </div>
 </header>
+<input type="checkbox" id="mobile-toggle" class="mobile-toggle">
+<label for="mobile-toggle" class="mobile-burger">☰</label>
+<nav class="nav-mobile-menu">
+<label for="mobile-toggle" class="mclose">×</label>
+<a href="index.html">Home</a>
+<a href="turf.html">Turf</a>
+<a href="concrete.html">Concrete</a>
+<a href="sacramento.html">Sacramento</a>
+<a href="elk-grove.html">Elk Grove</a>
+<a href="rancho-cordova.html">Rancho Cordova</a>
+<a href="why-us.html">Why Us</a>
+<a href="about.html">About</a>
+<a href="faq.html">FAQ</a>
+<a href="contact.html">Contact</a>
+<a class="mcall" href="tel:9168494844">📞 (916) 849-4844</a>
+</nav>
 
 <section class="hero" id="top">
   <div class="hero-bg" style="background-image:url('images/img-002-be077cb717.jpg')"></div>
@@ -373,8 +402,8 @@ footer a:hover{color:var(--gold)}
       </div>
     </div>
     <form class="qcard" id="quote" onsubmit="return submitQuote(event)">
-      <h3>Get a Free Quote in 30 Minutes</h3>
-      <div class="sub">Tell us about your project — we reply by text fast.</div>
+      <h3>Get a Free Quote in Same-Day Quote</h3>
+      <div class="sub">Tell us about your project — same day text reply.</div>
       <label for="qname">Name</label>
       <input id="qname" type="text" required autocomplete="name">
       <label for="qphone">Phone</label>
@@ -562,7 +591,7 @@ footer a:hover{color:var(--gold)}
     <div class="vs-table">
       <div class="vs-row head"><div>What you actually want</div><div class="us">Green Landscaping</div><div class="them">Most Other Crews</div></div>
       <div class="vs-row"><div class="cat">Turf AND concrete in one project</div><div class="yes">✓</div><div class="no">✗</div></div>
-      <div class="vs-row"><div class="cat">Reply within 30 minutes</div><div class="yes">✓</div><div class="partial">Sometimes</div></div>
+      <div class="vs-row"><div class="cat">Reply within Same-Day Quote</div><div class="yes">✓</div><div class="partial">Sometimes</div></div>
       <div class="vs-row"><div class="cat">C-27 California license</div><div class="yes">✓</div><div class="partial">Often expired</div></div>
       <div class="vs-row"><div class="cat">USA-made premium turf only</div><div class="yes">✓</div><div class="no">✗</div></div>
       <div class="vs-row"><div class="cat">Works in HOA new-build communities</div><div class="yes">✓</div><div class="partial">Maybe</div></div>
@@ -770,7 +799,7 @@ footer a:hover{color:var(--gold)}
     <h2 class="section-title">Four Steps from Dirt Patch to Done</h2>
     <p class="section-sub">No mystery, no pressure. Here's exactly what happens after you call.</p>
     <div class="steps">
-      <div class="step"><div class="step-num">1</div><h4>Call or Text</h4><p>Tell us your city and what you're thinking. We reply same-day, often within 30 minutes.</p></div>
+      <div class="step"><div class="step-num">1</div><h4>Call or Text</h4><p>Tell us your city and what you're thinking. We reply same-day, often within Same-Day Quote.</p></div>
       <div class="step"><div class="step-num">2</div><h4>Free Walkthrough</h4><p>Jose comes out, measures, talks options. You get a written quote — no obligation.</p></div>
       <div class="step"><div class="step-num">3</div><h4>Schedule &amp; Build</h4><p>One crew handles turf and concrete. Most backyards finish in 2–5 days. Site stays clean.</p></div>
       <div class="step"><div class="step-num">4</div><h4>Walk &amp; Warranty</h4><p>We walk the project with you, fix anything that bothers you, and back the work in writing.</p></div>
