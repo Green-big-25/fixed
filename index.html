@@ -12,7 +12,7 @@
 <meta property="og:description" content="Family-owned. Licensed. Turf and concrete specialists for newer homes in Sacramento, Elk Grove and Rancho Cordova.">
 <meta property="og:image" content="https://www.greenlandscapingofsacramento.com/images/img-002-be077cb717.jpg">
 <meta property="og:type" content="website">
-<link rel="icon" href="images/img-001-7d7cdd6cc7.jpg">
+<link rel="icon" href="images/img-001-7d7cdd6cc7.jpg">h
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
@@ -40,7 +40,7 @@ a{color:inherit;text-decoration:none}
 .callbar .sub{opacity:.75;font-weight:600;font-size:13px}
 @media(max-width:760px){.callbar{display:none}}
 
-.nav{background:#fff;border-bottom:1px solid #eee;position:sticky;top:46px;z-index:9990;backdrop-filter:saturate(180%) blur(8px)}
+top:14px;righ.nav{position:relative;background:#fff;border-bottomt:18px;z-index:99998:1px solid #eee;position:sticky;top:46px;z-index:9990;backdrop-filter:saturate(180%) blur(8px)}
 @media(max-width:760px){.nav{top:0}}
 .nav-inner{max-width:1280px;margin:0 auto;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:18px}
 .brand{display:flex;align-items:center;gap:12px;font-weight:900;color:var(--green-deep);font-size:18px}
@@ -279,7 +279,7 @@ footer a:hover{color:var(--gold)}
 
 @media(max-width:900px){
 .mobile-toggle{display:none}
-.mobile-burger{position:fixed;top:60px;right:18px;z-index:99998;background:#06140f;color:#d6a25f;width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.3);user-select:none}
+.mobile-burger{position:absolute;top:14px;right:18px;z-index:9999;background:#06140f;color:#d6a25f;width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.3);user-select:none}
 .nav-mobile-menu{position:fixed;top:0;right:-110%;width:300px;max-width:85vw;height:100vh;background:#06140f;z-index:99999;padding:70px 28px 28px;box-shadow:-12px 0 40px rgba(0,0,0,.4);overflow-y:auto;transition:right .3s ease;display:block}
 .mobile-toggle:checked ~ .nav-mobile-menu{right:0}
 .nav-mobile-menu a{display:block;color:#fff;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.1);font-weight:700;font-size:17px;text-decoration:none}
@@ -872,7 +872,7 @@ footer a:hover{color:var(--gold)}
 <div class="lb" id="lb"><span class="lb-close" id="lb-close">×</span><img id="lb-img" alt=""></div>
 
 <script>
-// Form -> SMS submit (no backend needed)
+// Move mobile burger inside nav on load(function(){var b=document.querySelector('.mobile-burger');var t=document.querySelector('.mobile-toggle');var n=document.querySelector('.nav');if(b&&t&&n){n.appendChild(t);n.appendChild(b);}})();
 function submitQuote(e){
   e.preventDefault();
   var name=document.getElementById('qname').value.trim();
