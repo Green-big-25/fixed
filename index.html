@@ -249,7 +249,7 @@ footer a:hover{color:var(--gold)}
 .mbar .mc-call{background:var(--gold);color:var(--green-deep)}
 .mbar .mc-text{background:var(--green-3);color:#fff}
 .mbar .mc-quote{background:transparent;color:#fff;border:1px solid var(--gold)}
-@media(max-width:760px){.mbar{display:flex}body{padding-bottom:78px}}
+@media(max-width:760px){.promo{display:none}.mbar{display:flex}body{padding-bottom:78px}}
 
 .cfab{position:fixed;right:24px;bottom:24px;z-index:9997;background:var(--gold);color:var(--green-deep);padding:18px 26px;border-radius:999px;font-weight:900;font-size:17px;letter-spacing:.4px;box-shadow:0 14px 40px rgba(0,0,0,.3),0 0 0 5px rgba(214,162,95,.2);display:inline-flex;align-items:center;gap:10px;transition:transform .15s}
 .cfab:hover{transform:translateY(-3px)}
@@ -279,7 +279,7 @@ footer a:hover{color:var(--gold)}
 
 @media(max-width:900px){
 .mobile-toggle{display:none}
-.mobile-burger{position:relative;z-index:9999;background:#06140f;color:#d6a25f;width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.3);user-select:none}
+.mobile-burger{position:fixed;top:14px;right:18px;z-index:99998;background:#06140f;color:#d6a25f;width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.3);user-select:none}
 .nav-mobile-menu{position:fixed;top:0;right:-110%;width:300px;max-width:85vw;height:100vh;background:#06140f;z-index:99999;padding:70px 28px 28px;box-shadow:-12px 0 40px rgba(0,0,0,.4);overflow-y:auto;transition:right .3s ease;display:block}
 .mobile-toggle:checked ~ .nav-mobile-menu{right:0}
 .nav-mobile-menu a{display:block;color:#fff;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.1);font-weight:700;font-size:17px;text-decoration:none}
@@ -872,7 +872,7 @@ footer a:hover{color:var(--gold)}
 <div class="lb" id="lb"><span class="lb-close" id="lb-close">×</span><img id="lb-img" alt=""></div>
 
 <script>
-// Move mobile burger inside nav on load(function(){var b=document.querySelector('.mobile-burger');var t=document.querySelector('.mobile-toggle');var n=document.querySelector('.nav');if(b&&t&&n){var ni=n.querySelector('.nav-inner');(ni||n).appendChild(t);(ni||n).appendChild(b);}})();
+// Mobile burger fixed positioned at nav level(function(){var b=document.querySelector('.mobile-burger');var t=document.querySelector('.mobile-toggle');var n=document.querySelector('.nav');if(b&&t&&n){})();
 function submitQuote(e){
   e.preventDefault();
   var name=document.getElementById('qname').value.trim();
