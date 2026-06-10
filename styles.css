@@ -221,16 +221,11 @@ footer .blurb{font-size:.95rem;margin-top:14px;max-width:360px}
 .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
 .reveal.in{opacity:1;transform:none}
 @media(max-width:980px){
-  .scrollscene{height:auto}
-  .scrollscene .sticky{position:relative;height:84vh}
   .scroll-hint{display:none}
   section{padding:72px 0}
   .guarantee{padding:38px}
   .logo-img{width:50px;height:50px}
   .logo-word{font-size:1.35rem}
-}
-@media(prefers-reduced-motion:reduce){
-  .scrollscene{height:auto}.scrollscene .sticky{position:relative;height:86vh}
 }
 
 /* overlap fixes added */
@@ -583,5 +578,58 @@ nav.menu-open .menu-toggle span:nth-child(3){transform:translateY(-7px) rotate(-
   }
   .scrollscene .sticky{
     min-height:590px !important;
+  }
+}
+
+
+/* ===== FINAL HERO/TRANSFORM SCROLL FIX =====
+   Single source of truth for scrub sections. This prevents old mobile rules
+   from turning the video scenes into static poster images. */
+#hero.scrollscene,
+#transform.scrollscene{
+  height:340vh !important;
+  min-height:2400px !important;
+}
+#hero.scrollscene .sticky,
+#transform.scrollscene .sticky{
+  position:sticky !important;
+  top:0 !important;
+  height:100vh !important;
+  min-height:640px !important;
+  overflow:hidden !important;
+}
+#hero.scrollscene video.scrub,
+#transform.scrollscene video.scrub{
+  display:block !important;
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover !important;
+  opacity:1 !important;
+  visibility:visible !important;
+}
+@supports (height:100svh){
+  #hero.scrollscene .sticky,
+  #transform.scrollscene .sticky{height:100svh !important;}
+}
+@media(max-width:980px){
+  #hero.scrollscene,
+  #transform.scrollscene{
+    height:335vh !important;
+    min-height:2300px !important;
+  }
+  #hero.scrollscene .sticky,
+  #transform.scrollscene .sticky{
+    position:sticky !important;
+    top:0 !important;
+    height:100svh !important;
+    min-height:620px !important;
+  }
+  #hero .beat,
+  #transform .beat{
+    display:flex !important;
+    padding:calc(var(--nav-h, 76px) + 22px) 18px 84px !important;
+    justify-content:center !important;
   }
 }
