@@ -23,26 +23,23 @@
   }
 
   /* Scroll-scrub videos + staged text (home only)
-     Final fix: direct scroll-to-frame seeking for both desktop and mobile.
-     No smoothing lag, so hero moves immediately and transformation reaches the full reveal. */
-  [].slice.call(document.querySelectorAll('.scrollscene')).forEach(function(scene){
+     REAL FIX: every scrollscene stays tall + sticky in CSS, and this script
+     seeks the video based on the section's scroll progress on all devices. */
+  function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
+
+  function beatOpacity(p, din, dout){
+    var fade = 0.08;
+    if(p < din - fade || p > dout + fade) return 0;
+    if(p < din) return (p - (din - fade)) / fade;
+    if(p > dout) return 1 - (p - dout) / fade;
+    return 1;
+  }
+
+  var scrubScenes = [].slice.call(document.querySelectorAll('.scrollscene'));
+  scrubScenes.forEach(function(scene){
     var video = scene.querySelector('video.scrub');
     var beats = [].slice.call(scene.querySelectorAll('.beat'));
     var duration = 0;
-    var ready = false;
-
-    function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
-
-    function setVideoReady(){
-      if(!video) return;
-      if(video.duration && isFinite(video.duration) && video.duration > 0){
-        duration = video.duration;
-        ready = true;
-        try {
-          if(video.currentTime < 0.01) video.currentTime = 0.01;
-        } catch(e){}
-      }
-    }
 
     if(video){
       video.muted = true;
@@ -54,67 +51,79 @@
       video.removeAttribute('autoplay');
       video.removeAttribute('loop');
 
-      video.addEventListener('loadedmetadata', setVideoReady);
-      video.addEventListener('durationchange', setVideoReady);
-      video.addEventListener('canplay', setVideoReady);
-      if(video.readyState >= 1) setVideoReady();
+      function rememberDuration(){
+        if(video.duration && isFinite(video.duration)){
+          duration = video.duration;
+        }
+      }
+      video.addEventListener('loadedmetadata', rememberDuration);
+      video.addEventListener('durationchange', rememberDuration);
+      video.addEventListener('canplay', rememberDuration);
+      if(video.readyState >= 1) rememberDuration();
       try { video.load(); } catch(e){}
-    }
 
-    function progressForScene(){
+      /* Unlock iOS/Safari seeking without making it play visibly. */
+      function unlock(){
+        var p = video.play();
+        if(p && p.then){
+          p.then(function(){ video.pause(); updateAllScrubScenes(); }).catch(function(){ updateAllScrubScenes(); });
+        } else {
+          try { video.pause(); } catch(e){}
+        }
+      }
+      window.addEventListener('touchstart', unlock, {once:true, passive:true});
+      window.addEventListener('pointerdown', unlock, {once:true, passive:true});
+    }
+  });
+
+  function updateAllScrubScenes(){
+    scrubScenes.forEach(function(scene){
+      var video = scene.querySelector('video.scrub');
+      var beats = [].slice.call(scene.querySelectorAll('.beat'));
       var rect = scene.getBoundingClientRect();
       var total = Math.max(scene.offsetHeight - window.innerHeight, 1);
-      return clamp(-rect.top / total, 0, 1);
-    }
+      var p = clamp(-rect.top / total, 0, 1);
 
-    function updateScene(){
-      var p = progressForScene();
+      if(video && video.duration && isFinite(video.duration)){
+        var dur = video.duration;
+        var end = Math.max(dur - 0.02, 0);
+        var target = p >= 0.995 ? end : clamp(p * end, 0.001, end);
 
-      if(video && ready && duration){
-        /* Avoid exact duration because some browsers jump to poster/end black frame.
-           But force near-end once progress is done so the after/reveal frame is visible. */
-        var safeEnd = Math.max(duration - 0.015, 0);
-        var target = p >= 0.985 ? safeEnd : clamp(p * safeEnd, 0.01, safeEnd);
         try {
-          if(isFinite(target) && Math.abs(video.currentTime - target) > 0.008){
+          if(video.fastSeek && Math.abs(video.currentTime - target) > 0.06){
+            video.fastSeek(target);
+          } else if(Math.abs(video.currentTime - target) > 0.015){
             video.currentTime = target;
           }
         } catch(e){}
       }
 
       beats.forEach(function(b){
-        var din = parseFloat(b.dataset.in);
-        var dout = parseFloat(b.dataset.out);
+        var din = parseFloat(b.dataset.in || 0);
+        var dout = parseFloat(b.dataset.out || 1);
         var op = beatOpacity(p, din, dout);
         b.style.opacity = op;
         b.style.transform = 'translateY(' + ((1 - op) * 22) + 'px)';
         b.style.pointerEvents = op > 0.2 ? 'auto' : 'none';
       });
-    }
+    });
+  }
 
-    function frame(){
-      updateScene();
-      requestAnimationFrame(frame);
-    }
-    requestAnimationFrame(frame);
+  var scrubTicking = false;
+  function requestScrubUpdate(){
+    if(scrubTicking) return;
+    scrubTicking = true;
+    requestAnimationFrame(function(){
+      updateAllScrubScenes();
+      scrubTicking = false;
+    });
+  }
 
-    window.addEventListener('resize', updateScene, {passive:true});
-    window.addEventListener('orientationchange', updateScene, {passive:true});
-
-    /* iPhone/iPad unlock: a tiny play/pause on first interaction helps allow seeking. */
-    function unlockVideo(){
-      if(!video) return;
-      var playPromise = video.play();
-      if(playPromise && playPromise.then){
-        playPromise.then(function(){ video.pause(); updateScene(); }).catch(function(){ updateScene(); });
-      } else {
-        try { video.pause(); } catch(e){}
-        updateScene();
-      }
-    }
-    window.addEventListener('touchstart', unlockVideo, {once:true, passive:true});
-    window.addEventListener('pointerdown', unlockVideo, {once:true, passive:true});
-  });
+  window.addEventListener('scroll', requestScrubUpdate, {passive:true});
+  window.addEventListener('resize', requestScrubUpdate, {passive:true});
+  window.addEventListener('orientationchange', requestScrubUpdate, {passive:true});
+  setInterval(updateAllScrubScenes, 250);
+  updateAllScrubScenes();
 
   /* Count-up stats */
   var stats = [].slice.call(document.querySelectorAll('.num[data-target]'));
