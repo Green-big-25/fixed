@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="420" viewBox="0 0 420 420" role="img" aria-label="Green Landscaping premium turf logo">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#f3d27a"/>
+      <stop offset="0.5" stop-color="#c9a14a"/>
+      <stop offset="1" stop-color="#8f6b24"/>
+    </linearGradient>
+    <linearGradient id="leaf" x1="0" x2="1" y1="1" y2="0">
+      <stop offset="0" stop-color="#183d2a"/>
+      <stop offset="1" stop-color="#4fa56b"/>
+    </linearGradient>
+  </defs>
+  <rect width="420" height="420" rx="88" fill="#101010"/>
+  <rect x="22" y="22" width="376" height="376" rx="72" fill="none" stroke="url(#g)" stroke-width="10"/>
+  <path d="M111 239c62-6 111-40 144-103 19 71-13 143-89 171-25 9-52 12-81 9 28-16 51-41 68-76-15 8-29 13-42 16z" fill="url(#leaf)"/>
+  <path d="M101 320c63-54 113-115 151-184" fill="none" stroke="url(#g)" stroke-width="11" stroke-linecap="round"/>
+  <text x="208" y="246" text-anchor="middle" font-family="Georgia,serif" font-size="132" font-weight="700" fill="url(#g)" letter-spacing="-10">GL</text>
+  <text x="210" y="311" text-anchor="middle" font-family="Arial,sans-serif" font-size="25" font-weight="700" fill="#f7f1df" letter-spacing="5">TURF</text>
+</svg>
