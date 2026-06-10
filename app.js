@@ -22,24 +22,42 @@
     return 1;
   }
 
-  /* Scroll-scrub videos + staged text (home only)
-     REAL FIX: every scrollscene stays tall + sticky in CSS, and this script
-     seeks the video based on the section's scroll progress on all devices. */
-  function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
+  /* Scroll-scrub videos + staged text (hero + transformation)
+     ULTRA FIX:
+     - Does NOT swap hero/transform videos.
+     - Keeps both scroll scenes alive on mobile and desktop.
+     - Does not remove either scene.
+     - Forces final beat to fully reveal near the bottom.
+  */
+  function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
 
-  function beatOpacity(p, din, dout){
-    var fade = 0.08;
-    if(p < din - fade || p > dout + fade) return 0;
-    if(p < din) return (p - (din - fade)) / fade;
-    if(p > dout) return 1 - (p - dout) / fade;
-    return 1;
-  }
-
-  var scrubScenes = [].slice.call(document.querySelectorAll('.scrollscene'));
-  scrubScenes.forEach(function(scene){
+  [].slice.call(document.querySelectorAll('.scrollscene')).forEach(function(scene){
     var video = scene.querySelector('video.scrub');
     var beats = [].slice.call(scene.querySelectorAll('.beat'));
     var duration = 0;
+    var current = 0;
+    var ready = false;
+
+    function setBeatProgress(p){
+      beats.forEach(function(b){
+        var din = parseFloat(b.getAttribute('data-in') || '0');
+        var dout = parseFloat(b.getAttribute('data-out') || '1');
+        var op = beatOpacity(p, din, dout);
+        /* Make the final message fully visible at the end of the scene. */
+        if(p > 0.94 && b.classList.contains('mobile-primary')) op = 1;
+        b.style.opacity = op;
+        b.style.transform = 'translateY(' + ((1 - op) * 18) + 'px)';
+        b.style.pointerEvents = op > 0.25 ? 'auto' : 'none';
+        b.style.display = 'flex';
+      });
+    }
+
+    function rememberDuration(){
+      if(video && video.duration && isFinite(video.duration)){
+        duration = video.duration;
+        ready = true;
+      }
+    }
 
     if(video){
       video.muted = true;
@@ -48,82 +66,70 @@
       video.setAttribute('playsinline','');
       video.setAttribute('webkit-playsinline','');
       video.setAttribute('preload','auto');
-      video.removeAttribute('autoplay');
       video.removeAttribute('loop');
+      video.removeAttribute('autoplay');
 
-      function rememberDuration(){
-        if(video.duration && isFinite(video.duration)){
-          duration = video.duration;
-        }
-      }
-      video.addEventListener('loadedmetadata', rememberDuration);
+      video.addEventListener('loadedmetadata', function(){
+        rememberDuration();
+        try { video.currentTime = 0.001; } catch(e){}
+      });
       video.addEventListener('durationchange', rememberDuration);
       video.addEventListener('canplay', rememberDuration);
+      video.addEventListener('loadeddata', rememberDuration);
       if(video.readyState >= 1) rememberDuration();
       try { video.load(); } catch(e){}
 
-      /* Unlock iOS/Safari seeking without making it play visibly. */
-      function unlock(){
-        var p = video.play();
-        if(p && p.then){
-          p.then(function(){ video.pause(); updateAllScrubScenes(); }).catch(function(){ updateAllScrubScenes(); });
+      /* iOS/Safari sometimes needs a user touch before reliable seeking. */
+      var unlock = function(){
+        if(!video) return;
+        var playPromise;
+        try { playPromise = video.play(); } catch(e){}
+        if(playPromise && playPromise.then){
+          playPromise.then(function(){
+            try { video.pause(); } catch(e){}
+            rememberDuration();
+          }).catch(function(){ rememberDuration(); });
         } else {
           try { video.pause(); } catch(e){}
+          rememberDuration();
         }
-      }
+      };
       window.addEventListener('touchstart', unlock, {once:true, passive:true});
       window.addEventListener('pointerdown', unlock, {once:true, passive:true});
     }
-  });
 
-  function updateAllScrubScenes(){
-    scrubScenes.forEach(function(scene){
-      var video = scene.querySelector('video.scrub');
-      var beats = [].slice.call(scene.querySelectorAll('.beat'));
+    function update(){
       var rect = scene.getBoundingClientRect();
       var total = Math.max(scene.offsetHeight - window.innerHeight, 1);
       var p = clamp(-rect.top / total, 0, 1);
 
-      if(video && video.duration && isFinite(video.duration)){
-        var dur = video.duration;
-        var end = Math.max(dur - 0.02, 0);
-        var target = p >= 0.995 ? end : clamp(p * end, 0.001, end);
-
-        try {
-          if(video.fastSeek && Math.abs(video.currentTime - target) > 0.06){
-            video.fastSeek(target);
-          } else if(Math.abs(video.currentTime - target) > 0.015){
-            video.currentTime = target;
-          }
-        } catch(e){}
+      if(video){
+        rememberDuration();
+        if(ready && duration){
+          /* Stop just before the exact end so Safari does not show black/end glitch. */
+          var end = Math.max(duration - 0.035, 0.001);
+          var target = p >= 0.985 ? end : clamp(p * end, 0.001, end);
+          /* Smooth on desktop, responsive on mobile. */
+          var smoothing = window.innerWidth <= 980 ? 0.36 : 0.18;
+          current += (target - current) * smoothing;
+          if(Math.abs(target - current) < 0.02 || p >= 0.985) current = target;
+          try {
+            if(video.fastSeek && Math.abs(video.currentTime - current) > 0.12){
+              video.fastSeek(current);
+            } else if(Math.abs(video.currentTime - current) > 0.01){
+              video.currentTime = current;
+            }
+          } catch(e){}
+        }
       }
 
-      beats.forEach(function(b){
-        var din = parseFloat(b.dataset.in || 0);
-        var dout = parseFloat(b.dataset.out || 1);
-        var op = beatOpacity(p, din, dout);
-        b.style.opacity = op;
-        b.style.transform = 'translateY(' + ((1 - op) * 22) + 'px)';
-        b.style.pointerEvents = op > 0.2 ? 'auto' : 'none';
-      });
-    });
-  }
+      setBeatProgress(p);
+      requestAnimationFrame(update);
+    }
 
-  var scrubTicking = false;
-  function requestScrubUpdate(){
-    if(scrubTicking) return;
-    scrubTicking = true;
-    requestAnimationFrame(function(){
-      updateAllScrubScenes();
-      scrubTicking = false;
-    });
-  }
-
-  window.addEventListener('scroll', requestScrubUpdate, {passive:true});
-  window.addEventListener('resize', requestScrubUpdate, {passive:true});
-  window.addEventListener('orientationchange', requestScrubUpdate, {passive:true});
-  setInterval(updateAllScrubScenes, 250);
-  updateAllScrubScenes();
+    setBeatProgress(0);
+    requestAnimationFrame(update);
+  });
 
   /* Count-up stats */
   var stats = [].slice.call(document.querySelectorAll('.num[data-target]'));

@@ -221,9 +221,8 @@ footer .blurb{font-size:.95rem;margin-top:14px;max-width:360px}
 .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
 .reveal.in{opacity:1;transform:none}
 @media(max-width:980px){
-  /* Keep scroll-scrub active on mobile. Do not collapse these sections. */
-  .scrollscene{height:320vh}
-  .scrollscene .sticky{position:sticky;top:0;height:100svh;min-height:100vh}
+  .scrollscene{height:auto}
+  .scrollscene .sticky{position:relative;height:84vh}
   .scroll-hint{display:none}
   section{padding:72px 0}
   .guarantee{padding:38px}
@@ -500,24 +499,89 @@ nav.menu-open .menu-toggle span:nth-child(3){transform:translateY(-7px) rotate(-
 }
 
 
-/* Final scroll-video repair: keep enough scroll distance and sticky stage on all normal-motion devices */
-@media (prefers-reduced-motion:no-preference){
-  .scrollscene{height:360vh!important;}
-  .scrollscene .sticky{position:sticky!important;top:0!important;height:100vh!important;min-height:620px;}
+/* ===== ULTRA SCROLL-SCRUB REPAIR =====
+   Keep BOTH 3D video sections intact:
+   #hero -> hero-scrub.mp4
+   #transform -> transform-scrub.mp4
+   This overrides older mobile rules that made .scrollscene height:auto. */
+.scrollscene{
+  position:relative !important;
+  height:340vh !important;
+  min-height:2400px !important;
+  background:#000 !important;
 }
-@media (max-width:980px) and (prefers-reduced-motion:no-preference){
-  .scrollscene{height:340vh!important;}
-  .scrollscene .sticky{height:100svh!important;min-height:620px;}
+.scrollscene .sticky{
+  position:sticky !important;
+  top:0 !important;
+  height:100vh !important;
+  min-height:640px !important;
+  overflow:hidden !important;
+}
+.scrollscene video.scrub{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover !important;
+  opacity:1 !important;
+  visibility:visible !important;
+}
+.scrollscene .beats,
+.scrollscene .beat{
+  pointer-events:none;
+}
+.scrollscene .beat{
+  display:flex !important;
+  opacity:0;
+  z-index:3;
+}
+.scrollscene .beat .inner{
+  pointer-events:auto;
 }
 
-
-/* FINAL SCROLL VIDEO FIX — keep hero/transformation scrub active on every device */
-.scrollscene{height:340vh}
-.scrollscene .sticky{position:sticky;top:0;height:100vh;overflow:hidden}
-@supports (height: 100svh){
-  .scrollscene .sticky{height:100svh}
+@supports (height:100svh){
+  .scrollscene .sticky{
+    height:100svh !important;
+  }
 }
 @media(max-width:980px){
-  .scrollscene{height:320vh !important}
-  .scrollscene .sticky{position:sticky !important;top:0;height:100svh !important;min-height:100vh;overflow:hidden}
+  .scrollscene{
+    height:330vh !important;
+    min-height:2200px !important;
+  }
+  .scrollscene .sticky{
+    position:sticky !important;
+    top:0 !important;
+    height:100svh !important;
+    min-height:620px !important;
+  }
+  .scrollscene .beat{
+    padding:calc(var(--nav-h, 76px) + 24px) 18px 82px !important;
+    justify-content:center !important;
+  }
+  .scrollscene .beat .inner{
+    max-width:94vw !important;
+  }
+  .scrollscene .beat h1{
+    font-size:clamp(2.25rem,12vw,3.55rem) !important;
+  }
+  .scrollscene .beat h2{
+    font-size:clamp(2.05rem,10.8vw,3.15rem) !important;
+  }
+  .scrollscene .beat .sub{
+    font-size:1rem !important;
+    line-height:1.55 !important;
+  }
+  .scrollscene .beat .note{
+    display:grid !important;
+    gap:10px !important;
+  }
+}
+@media(max-width:420px){
+  .scrollscene{
+    min-height:2100px !important;
+  }
+  .scrollscene .sticky{
+    min-height:590px !important;
+  }
 }
