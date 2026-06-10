@@ -497,3 +497,14 @@ nav.menu-open .menu-toggle span:nth-child(3){transform:translateY(-7px) rotate(-
     font-size:1rem;
   }
 }
+
+
+/* Final scroll-video repair: keep enough scroll distance and sticky stage on all normal-motion devices */
+@media (prefers-reduced-motion:no-preference){
+  .scrollscene{height:360vh!important;}
+  .scrollscene .sticky{position:sticky!important;top:0!important;height:100vh!important;min-height:620px;}
+}
+@media (max-width:980px) and (prefers-reduced-motion:no-preference){
+  .scrollscene{height:340vh!important;}
+  .scrollscene .sticky{height:100svh!important;min-height:620px;}
+}

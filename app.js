@@ -23,96 +23,97 @@
   }
 
   /* Scroll-scrub videos + staged text (home only)
-     Robust fix: keep desktop + mobile scroll movement, force MP4 metadata load,
-     and never seek to the exact final timestamp where browsers can freeze on poster. */
+     Final fix: direct scroll-to-frame seeking for both desktop and mobile.
+     No smoothing lag, so hero moves immediately and transformation reaches the full reveal. */
   [].slice.call(document.querySelectorAll('.scrollscene')).forEach(function(scene){
     var video = scene.querySelector('video.scrub');
     var beats = [].slice.call(scene.querySelectorAll('.beat'));
-    var current = 0;
     var duration = 0;
     var ready = false;
-    var unlocked = false;
 
-    function prepVideo(){
+    function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
+
+    function setVideoReady(){
       if(!video) return;
+      if(video.duration && isFinite(video.duration) && video.duration > 0){
+        duration = video.duration;
+        ready = true;
+        try {
+          if(video.currentTime < 0.01) video.currentTime = 0.01;
+        } catch(e){}
+      }
+    }
+
+    if(video){
       video.muted = true;
       video.playsInline = true;
       video.setAttribute('muted','');
       video.setAttribute('playsinline','');
       video.setAttribute('webkit-playsinline','');
       video.setAttribute('preload','auto');
+      video.removeAttribute('autoplay');
+      video.removeAttribute('loop');
 
-      function setDuration(){
-        if(video.duration && isFinite(video.duration)){
-          /* avoid seeking to the exact end; some browsers show poster/freeze there */
-          duration = Math.max(video.duration - 0.08, 0);
-          ready = true;
-          try { video.currentTime = Math.min(0.04, duration || 0); } catch(e){}
-        }
-      }
-
-      video.addEventListener('loadedmetadata', setDuration);
-      video.addEventListener('durationchange', setDuration);
-      video.addEventListener('canplay', setDuration);
-      if(video.readyState >= 1) setDuration();
+      video.addEventListener('loadedmetadata', setVideoReady);
+      video.addEventListener('durationchange', setVideoReady);
+      video.addEventListener('canplay', setVideoReady);
+      if(video.readyState >= 1) setVideoReady();
       try { video.load(); } catch(e){}
     }
 
-    prepVideo();
-
-    function unlockVideo(){
-      if(!video || unlocked) return;
-      unlocked = true;
-      var p = video.play();
-      if(p && p.then){
-        p.then(function(){ try { video.pause(); } catch(e){} }).catch(function(){});
-      }
-    }
-    window.addEventListener('touchstart', unlockVideo, {once:true, passive:true});
-    window.addEventListener('pointerdown', unlockVideo, {once:true, passive:true});
-    window.addEventListener('scroll', unlockVideo, {once:true, passive:true});
-
-    if(reducedMotion){
-      if(video){
-        video.setAttribute('loop','');
-        video.setAttribute('autoplay','');
-        var tryPlay = function(){ video.play().catch(function(){}); };
-        if(video.readyState >= 2) tryPlay();
-        video.addEventListener('canplay', tryPlay, {once:true});
-      }
-      beats.forEach(function(b){
-        if(b.classList.contains('mobile-primary')){ b.style.opacity = 1; b.style.transform = 'none'; }
-        else { b.style.display = 'none'; }
-      });
-      return;
-    }
-
-    function frame(){
+    function progressForScene(){
       var rect = scene.getBoundingClientRect();
       var total = Math.max(scene.offsetHeight - window.innerHeight, 1);
-      var scrolled = Math.min(Math.max(-rect.top, 0), total);
-      var progress = scrolled / total;
+      return clamp(-rect.top / total, 0, 1);
+    }
+
+    function updateScene(){
+      var p = progressForScene();
 
       if(video && ready && duration){
-        var target = Math.max(0.02, Math.min(duration, progress * duration));
-        current += (target - current) * 0.18;
-        if(Math.abs(target - current) < 0.003) current = target;
+        /* Avoid exact duration because some browsers jump to poster/end black frame.
+           But force near-end once progress is done so the after/reveal frame is visible. */
+        var safeEnd = Math.max(duration - 0.015, 0);
+        var target = p >= 0.985 ? safeEnd : clamp(p * safeEnd, 0.01, safeEnd);
         try {
-          if(isFinite(current) && Math.abs(video.currentTime - current) > 0.015){
-            video.currentTime = current;
+          if(isFinite(target) && Math.abs(video.currentTime - target) > 0.008){
+            video.currentTime = target;
           }
         } catch(e){}
       }
 
       beats.forEach(function(b){
-        var op = beatOpacity(progress, parseFloat(b.dataset.in), parseFloat(b.dataset.out));
+        var din = parseFloat(b.dataset.in);
+        var dout = parseFloat(b.dataset.out);
+        var op = beatOpacity(p, din, dout);
         b.style.opacity = op;
         b.style.transform = 'translateY(' + ((1 - op) * 22) + 'px)';
         b.style.pointerEvents = op > 0.2 ? 'auto' : 'none';
       });
+    }
+
+    function frame(){
+      updateScene();
       requestAnimationFrame(frame);
     }
     requestAnimationFrame(frame);
+
+    window.addEventListener('resize', updateScene, {passive:true});
+    window.addEventListener('orientationchange', updateScene, {passive:true});
+
+    /* iPhone/iPad unlock: a tiny play/pause on first interaction helps allow seeking. */
+    function unlockVideo(){
+      if(!video) return;
+      var playPromise = video.play();
+      if(playPromise && playPromise.then){
+        playPromise.then(function(){ video.pause(); updateScene(); }).catch(function(){ updateScene(); });
+      } else {
+        try { video.pause(); } catch(e){}
+        updateScene();
+      }
+    }
+    window.addEventListener('touchstart', unlockVideo, {once:true, passive:true});
+    window.addEventListener('pointerdown', unlockVideo, {once:true, passive:true});
   });
 
   /* Count-up stats */
