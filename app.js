@@ -22,14 +22,60 @@
     return 1;
   }
 
-  /* Scroll-scrub videos + staged text (home only) */
+  /* Scroll-scrub videos + staged text (home only)
+     Robust fix: keep desktop + mobile scroll movement, force MP4 metadata load,
+     and never seek to the exact final timestamp where browsers can freeze on poster. */
   [].slice.call(document.querySelectorAll('.scrollscene')).forEach(function(scene){
     var video = scene.querySelector('video.scrub');
     var beats = [].slice.call(scene.querySelectorAll('.beat'));
+    var current = 0;
+    var duration = 0;
+    var ready = false;
+    var unlocked = false;
+
+    function prepVideo(){
+      if(!video) return;
+      video.muted = true;
+      video.playsInline = true;
+      video.setAttribute('muted','');
+      video.setAttribute('playsinline','');
+      video.setAttribute('webkit-playsinline','');
+      video.setAttribute('preload','auto');
+
+      function setDuration(){
+        if(video.duration && isFinite(video.duration)){
+          /* avoid seeking to the exact end; some browsers show poster/freeze there */
+          duration = Math.max(video.duration - 0.08, 0);
+          ready = true;
+          try { video.currentTime = Math.min(0.04, duration || 0); } catch(e){}
+        }
+      }
+
+      video.addEventListener('loadedmetadata', setDuration);
+      video.addEventListener('durationchange', setDuration);
+      video.addEventListener('canplay', setDuration);
+      if(video.readyState >= 1) setDuration();
+      try { video.load(); } catch(e){}
+    }
+
+    prepVideo();
+
+    function unlockVideo(){
+      if(!video || unlocked) return;
+      unlocked = true;
+      var p = video.play();
+      if(p && p.then){
+        p.then(function(){ try { video.pause(); } catch(e){} }).catch(function(){});
+      }
+    }
+    window.addEventListener('touchstart', unlockVideo, {once:true, passive:true});
+    window.addEventListener('pointerdown', unlockVideo, {once:true, passive:true});
+    window.addEventListener('scroll', unlockVideo, {once:true, passive:true});
 
     if(reducedMotion){
       if(video){
-        video.setAttribute('loop',''); video.setAttribute('autoplay',''); video.muted = true;
+        video.setAttribute('loop','');
+        video.setAttribute('autoplay','');
         var tryPlay = function(){ video.play().catch(function(){}); };
         if(video.readyState >= 2) tryPlay();
         video.addEventListener('canplay', tryPlay, {once:true});
@@ -41,26 +87,28 @@
       return;
     }
 
-    var current = 0, duration = 0;
-    if(video){
-      video.addEventListener('loadedmetadata', function(){ duration = video.duration || 0; });
-      if(video.readyState >= 1) duration = video.duration || 0;
-    }
     function frame(){
       var rect = scene.getBoundingClientRect();
-      var total = scene.offsetHeight - window.innerHeight;
+      var total = Math.max(scene.offsetHeight - window.innerHeight, 1);
       var scrolled = Math.min(Math.max(-rect.top, 0), total);
-      var p = total > 0 ? scrolled / total : 0;
-      if(video && duration){
-        var target = p * duration;
-        current += (target - current) * 0.12;
-        if(Math.abs(target - current) < 0.001) current = target;
-        if(isFinite(current)){ try { video.currentTime = current; } catch(e){} }
+      var progress = scrolled / total;
+
+      if(video && ready && duration){
+        var target = Math.max(0.02, Math.min(duration, progress * duration));
+        current += (target - current) * 0.18;
+        if(Math.abs(target - current) < 0.003) current = target;
+        try {
+          if(isFinite(current) && Math.abs(video.currentTime - current) > 0.015){
+            video.currentTime = current;
+          }
+        } catch(e){}
       }
+
       beats.forEach(function(b){
-        var op = beatOpacity(p, parseFloat(b.dataset.in), parseFloat(b.dataset.out));
+        var op = beatOpacity(progress, parseFloat(b.dataset.in), parseFloat(b.dataset.out));
         b.style.opacity = op;
         b.style.transform = 'translateY(' + ((1 - op) * 22) + 'px)';
+        b.style.pointerEvents = op > 0.2 ? 'auto' : 'none';
       });
       requestAnimationFrame(frame);
     }
