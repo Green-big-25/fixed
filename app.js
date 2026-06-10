@@ -2,8 +2,9 @@
 (function(){
   var y = document.getElementById('yr'); if(y) y.textContent = new Date().getFullYear();
 
-  var isMobile = window.matchMedia('(max-width:980px), (pointer:coarse)').matches
-             || window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var isTouch = window.matchMedia('(max-width:980px), (pointer:coarse)').matches;
+  var reducedMotion = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var isMobile = isTouch;
 
   /* Nav solid on scroll */
   var nav = document.getElementById('nav');
@@ -26,7 +27,7 @@
     var video = scene.querySelector('video.scrub');
     var beats = [].slice.call(scene.querySelectorAll('.beat'));
 
-    if(isMobile){
+    if(reducedMotion){
       if(video){
         video.setAttribute('loop',''); video.setAttribute('autoplay',''); video.muted = true;
         var tryPlay = function(){ video.play().catch(function(){}); };
@@ -92,7 +93,7 @@
   [].slice.call(document.querySelectorAll('.reveal')).forEach(function(el){ ro.observe(el); });
 
   /* 3D tilt (desktop only) */
-  if(!isMobile){
+  if(!isTouch){
     [].slice.call(document.querySelectorAll('.tilt')).forEach(function(card){
       card.addEventListener('mousemove', function(e){
         var r=card.getBoundingClientRect();
