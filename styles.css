@@ -178,3 +178,13 @@
 /* about motto */
 .about-motto{margin-top:26px;padding-top:22px;border-top:2px solid rgba(13,40,24,.25);font-size:1.25rem;line-height:1.45}
 .about-motto strong{font-weight:700}
+
+  /* faq */
+  .faq{background:var(--tint-green)}
+  .faq .wrap{max-width:860px}
+  .faq h2{margin-bottom:30px}
+  .faq-item{background:var(--white);border-radius:12px;box-shadow:var(--shadow);margin-bottom:12px;padding:0 22px}
+  .faq-item summary{cursor:pointer;padding:18px 0;font-weight:600;color:var(--navy);list-style:none;display:flex;justify-content:space-between;gap:16px}
+  .faq-item summary::after{content:'+';color:var(--green-dark);font-size:1.5rem;line-height:1}
+  .faq-item[open] summary::after{content:'\2013'}
+  .faq-item p{padding:0 0 18px;color:#33455e}
