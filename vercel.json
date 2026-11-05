@@ -1,0 +1,22 @@
+{
+  "cleanUrls": false,
+  "trailingSlash": false,
+  "redirects": [
+    { "source": "/index.html", "destination": "/", "permanent": true },
+    { "source": "/reviews.html", "destination": "/", "permanent": true },
+    { "source": "/why-us.html", "destination": "/", "permanent": true },
+    { "source": "/about.html", "destination": "/", "permanent": true },
+    { "source": "/faq.html", "destination": "/", "permanent": true },
+    { "source": "/gallery.html", "destination": "/", "permanent": true },
+    { "source": "/contact.html", "destination": "/", "permanent": true },
+    { "source": "/sacramento.html", "destination": "/", "permanent": true },
+    { "source": "/turf.html", "destination": "/artificial-turf.html", "permanent": true },
+    { "source": "/concrete.html", "destination": "/concrete-patios.html", "permanent": true },
+    { "source": "/about/:path*", "destination": "/", "permanent": true },
+    { "source": "/portfolio/:path*", "destination": "/", "permanent": true },
+    { "source": "/services/:path*", "destination": "/", "permanent": true },
+    { "source": "/contact/:path*", "destination": "/", "permanent": true },
+    { "source": "/reviews/:path*", "destination": "/", "permanent": true },
+    { "source": "/gallery/:path*", "destination": "/", "permanent": true }
+  ]
+}
